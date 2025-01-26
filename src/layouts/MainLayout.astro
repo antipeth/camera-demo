@@ -1,21 +1,18 @@
----
-const { title, children } = Astro.props;
----
-
-<html lang="en">
+<!doctype html>
+<html lang="zh">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title>手语翻译</title>
   </head>
 
   <body>
     <header class="bg-blue-500 text-white p-4">
-      <h1 class="text-center text-3xl">{title}</h1>
+      <h1 class="text-center text-3xl">手语翻译</h1>
     </header>
 
     <main class="container mx-auto mt-8">
-      {children}
+      <slot />
     </main>
 
     <footer class="bg-blue-500 text-white p-4 text-center">

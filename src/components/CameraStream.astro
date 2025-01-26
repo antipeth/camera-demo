@@ -1,21 +1,37 @@
----
-import { useState } from 'react';
----
+<div>
+  <button id="toggleButton" class="px-4 py-2 bg-blue-500 text-white rounded">
+    开启摄像头
+  </button>
+
+  <video
+    id="videoElement"
+    width="100%"
+    height="auto"
+    autoPlay
+    playsInline
+    style="display: none;" 
+  />
+</div>
 
 <script>
-  // React hook用于管理组件的状态
-  const [hasPermission, setHasPermission] = useState(false);
-  const [stream, setStream] = useState(null);
+  let hasPermission = false;
+  let stream = null;
+
+  // 获取 DOM 元素
+  const videoElement = document.getElementById('videoElement');
+  const toggleButton = document.getElementById('toggleButton');
 
   const startVideo = async () => {
     try {
       // 请求摄像头权限
-      const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setStream(videoStream);
-      setHasPermission(true);
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      hasPermission = true;
+      videoElement.srcObject = stream;
+      videoElement.style.display = 'block';  // 显示 video 元素
+      toggleButton.textContent = '关闭摄像头';  // 更新按钮文本
     } catch (err) {
       console.error('Error accessing webcam:', err);
-      setHasPermission(false);
+      hasPermission = false;
     }
   };
 
@@ -23,29 +39,20 @@ import { useState } from 'react';
     if (stream) {
       const tracks = stream.getTracks();
       tracks.forEach(track => track.stop());
-      setStream(null);
-      setHasPermission(false);
+      stream = null;
+      hasPermission = false;
+      videoElement.srcObject = null;
+      videoElement.style.display = 'none';  // 隐藏 video 元素
+      toggleButton.textContent = '开启摄像头';  // 恢复按钮文本
     }
   };
+
+  // 为按钮添加事件监听
+  toggleButton.addEventListener('click', () => {
+    if (hasPermission) {
+      stopVideo();
+    } else {
+      startVideo();
+    }
+  });
 </script>
-
-<div>
-  <button onClick={hasPermission ? stopVideo : startVideo} class="px-4 py-2 bg-blue-500 text-white rounded">
-    {hasPermission ? 'Stop Camera' : 'Start Camera'}
-  </button>
-
-  {hasPermission && (
-    <video
-      id="videoElement"
-      width="100%"
-      height="auto"
-      autoPlay
-      playsInline
-      ref={(el) => {
-        if (el && stream) {
-          el.srcObject = stream;
-        }
-      }}
-    />
-  )}
-</div>
