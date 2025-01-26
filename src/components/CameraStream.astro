@@ -1,0 +1,51 @@
+---
+import { useState } from 'react';
+---
+
+<script>
+  // React hook用于管理组件的状态
+  const [hasPermission, setHasPermission] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  const startVideo = async () => {
+    try {
+      // 请求摄像头权限
+      const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setStream(videoStream);
+      setHasPermission(true);
+    } catch (err) {
+      console.error('Error accessing webcam:', err);
+      setHasPermission(false);
+    }
+  };
+
+  const stopVideo = () => {
+    if (stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      setStream(null);
+      setHasPermission(false);
+    }
+  };
+</script>
+
+<div>
+  <button onClick={hasPermission ? stopVideo : startVideo} class="px-4 py-2 bg-blue-500 text-white rounded">
+    {hasPermission ? 'Stop Camera' : 'Start Camera'}
+  </button>
+
+  {hasPermission && (
+    <video
+      id="videoElement"
+      width="100%"
+      height="auto"
+      autoPlay
+      playsInline
+      ref={(el) => {
+        if (el && stream) {
+          el.srcObject = stream;
+        }
+      }}
+    />
+  )}
+</div>

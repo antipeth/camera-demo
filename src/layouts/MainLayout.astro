@@ -1,0 +1,25 @@
+---
+const { title, children } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <header class="bg-blue-500 text-white p-4">
+      <h1 class="text-center text-3xl">{title}</h1>
+    </header>
+
+    <main class="container mx-auto mt-8">
+      {children}
+    </main>
+
+    <footer class="bg-blue-500 text-white p-4 text-center">
+      <p>&copy; 2025 Your Company</p>
+    </footer>
+  </body>
+</html>
