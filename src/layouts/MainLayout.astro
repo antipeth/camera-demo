@@ -36,17 +36,17 @@ import user from '../assets/user.svg';
             </a>
           </div>
           <div class="flex items-center">
-              <div class="flex items-center ms-3">
+              <div class="flex items-center ms-3 relative">
                 <div>
                   <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-                    <span class="sr-only">Open user menu</span>
+                    <span class="sr-only">打开用户菜单</span>
                     <img class="w-8 h-8 rounded-full" src={user.src} alt="user photo">
                   </button>
                 </div>
-                <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                <div class="z-50 hidden absolute top-full right-0 mt-2 w-48 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
                   <div class="px-4 py-3" role="none">
                     <p class="text-sm text-gray-900 dark:text-white" role="none">
-                      Neil Sims
+                      David John
                     </p>
                     <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
                       example@mail.com
@@ -54,16 +54,13 @@ import user from '../assets/user.svg';
                   </div>
                   <ul class="py-1" role="none">
                     <li>
-                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
+                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">面板</a>
                     </li>
                     <li>
-                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</a>
+                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">设置</a>
                     </li>
                     <li>
-                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
-                    </li>
-                    <li>
-                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">注销</a>
                     </li>
                   </ul>
                 </div>
@@ -152,7 +149,6 @@ import user from '../assets/user.svg';
             <slot name="display-slot" />
           </div>
           <div class="grid grid-cols-2 gap-4">
-
           </div>
 
     <!-- Footer -->
@@ -175,4 +171,20 @@ import user from '../assets/user.svg';
      // 切换侧边栏的可见性
      sidebar.classList.toggle('-translate-x-full');
    });
+   document.addEventListener('DOMContentLoaded', () => {
+  const dropdownButton = document.querySelector('[data-dropdown-toggle="dropdown-user"]');
+  const dropdownMenu = document.getElementById('dropdown-user');
+
+  dropdownButton.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('hidden');
+  });
+
+  // Optional: Close dropdown if clicked outside
+  document.addEventListener('click', (event) => {
+    if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.classList.add('hidden');
+    }
+  });
+});
+
  </script>
