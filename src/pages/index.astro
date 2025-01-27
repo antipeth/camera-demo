@@ -1,8 +1,11 @@
 ---
 import CameraStream from '../components/CameraStream.astro';
+import Display from '../components/Display.astro';
+
 import MainLayout from '../layouts/MainLayout.astro';
 ---
 
 <MainLayout>
-  <CameraStream></CameraStream>
+  <CameraStream slot="camera-slot"></CameraStream>
+  <Display slot="display-slot"></Display>
 </MainLayout>

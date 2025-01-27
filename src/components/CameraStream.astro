@@ -1,23 +1,32 @@
 <div class="flex flex-col items-center justify-center space-y-6">
-
-
   <!-- 视频播放元素 -->
   <div class="w-full max-w-2xl bg-gray-800 p-4 rounded-lg shadow-lg">
-    <video
-      id="videoElement"
-      width="100%"
-      height="auto"
-      autoPlay
-      playsInline
-      style="display: none; border-radius: 8px;"
-    />
+    <!-- 初始黑色背景，当摄像头未开启时 -->
+    <div id="videoContainer" class="w-full h-64 bg-black rounded-lg overflow-hidden">
+      <video
+        id="videoElement"
+        width="100%"
+        height="100%"
+        autoPlay
+        playsInline
+        style="display: none; border-radius: 8px;"
+      />
+    </div>
   </div>
+
   <!-- 摄像头开关按钮 -->
   <button
-  id="toggleButton"
-  class="px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-500 transition duration-300"
->
-    开启摄像头
+    id="toggleButton"
+    class="px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-500 transition duration-300 flex items-center space-x-2"
+  >
+    <!-- 播放图标 -->
+    <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z" />
+    </svg>
+    <!-- 暂停图标 -->
+    <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 hidden">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 19V5h4v14H6zm8 0V5h4v14h-4z" />
+    </svg>
   </button>
 </div>
 
@@ -28,6 +37,8 @@
   // 获取 DOM 元素
   const videoElement = document.getElementById('videoElement');
   const toggleButton = document.getElementById('toggleButton');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
 
   const startVideo = async () => {
     try {
@@ -36,7 +47,9 @@
       hasPermission = true;
       videoElement.srcObject = stream;
       videoElement.style.display = 'block';  // 显示 video 元素
-      toggleButton.textContent = '关闭摄像头';  // 更新按钮文本
+      // 显示暂停图标，隐藏播放图标
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
     } catch (err) {
       console.error('Error accessing webcam:', err);
       hasPermission = false;
@@ -51,7 +64,9 @@
       hasPermission = false;
       videoElement.srcObject = null;
       videoElement.style.display = 'none';  // 隐藏 video 元素
-      toggleButton.textContent = '开启摄像头';  // 恢复按钮文本
+      // 显示播放图标，隐藏暂停图标
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
     }
   };
 
