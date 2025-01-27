@@ -165,3 +165,14 @@ import user from '../assets/user.svg';
     </div>
   </body>
 </html>
+<script>
+   // 获取按钮和侧边栏元素
+   const toggleButton = document.querySelector('[data-drawer-toggle="logo-sidebar"]');
+   const sidebar = document.getElementById('logo-sidebar');
+ 
+   // 监听按钮的点击事件
+   toggleButton.addEventListener('click', () => {
+     // 切换侧边栏的可见性
+     sidebar.classList.toggle('-translate-x-full');
+   });
+ </script>
