@@ -30,51 +30,69 @@
 </div>
 
 <script>
-  let hasPermission = false;
-  let stream = null;
+  const STREAM_URL = "http://192.168.122.195:5000"; // 修改为你的服务器地址
 
-  // 获取 DOM 元素
+  let stream = null;
+  let mediaRecorder = null;
+  let isStreaming = false;
   const videoElement = document.getElementById('videoElement');
   const toggleButton = document.getElementById('toggleButton');
   const playIcon = document.getElementById('playIcon');
   const pauseIcon = document.getElementById('pauseIcon');
 
-  const startVideo = async () => {
+  // 启动摄像头并开始推流
+  const startStreaming = async () => {
     try {
-      // 请求摄像头权限
       stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      hasPermission = true;
       videoElement.srcObject = stream;
-      videoElement.style.display = 'block';  // 显示 video 元素
-      // 显示暂停图标，隐藏播放图标
-      playIcon.classList.add('hidden');
-      pauseIcon.classList.remove('hidden');
+      videoElement.classList.remove("hidden");
+
+      playIcon.classList.add("hidden");
+      pauseIcon.classList.remove("hidden");
+
+      mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      mediaRecorder.ondataavailable = async (event) => {
+        if (event.data.size > 0) {
+          const formData = new FormData();
+          formData.append("video", event.data);
+
+          await fetch(`${STREAM_URL}/stream`, {
+            method: "POST",
+            body: formData,
+          });
+        }
+      };
+
+      mediaRecorder.start(1000); // 每 1 秒发送一次数据
+      isStreaming = true;
     } catch (err) {
-      console.error('Error accessing webcam:', err);
-      hasPermission = false;
+      console.error("无法访问摄像头:", err);
     }
   };
 
-  const stopVideo = () => {
+  // 停止摄像头并结束推流
+  const stopStreaming = () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
     if (stream) {
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
+      stream.getTracks().forEach(track => track.stop());
       stream = null;
-      hasPermission = false;
-      videoElement.srcObject = null;
-      videoElement.style.display = 'none';  // 隐藏 video 元素
-      // 显示播放图标，隐藏暂停图标
-      playIcon.classList.remove('hidden');
-      pauseIcon.classList.add('hidden');
     }
+    videoElement.classList.add("hidden");
+
+    playIcon.classList.remove("hidden");
+    pauseIcon.classList.add("hidden");
+
+    isStreaming = false;
   };
 
-  // 为按钮添加事件监听
-  toggleButton.addEventListener('click', () => {
-    if (hasPermission) {
-      stopVideo();
+  // 绑定按钮事件
+  toggleButton.addEventListener("click", () => {
+    if (isStreaming) {
+      stopStreaming();
     } else {
-      startVideo();
+      startStreaming();
     }
   });
 </script>
