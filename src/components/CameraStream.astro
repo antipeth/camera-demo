@@ -31,6 +31,7 @@
 
 <script>
   const STREAM_URL = "http://192.168.122.195:5000"; // 修改为你的服务器地址
+  const VIDEO_URL = `${STREAM_URL}/api/video`;
 
   let stream = null;
   let mediaRecorder = null;
@@ -56,7 +57,7 @@
           const formData = new FormData();
           formData.append("video", event.data);
 
-          await fetch(`${STREAM_URL}/api/stream`, {
+          await fetch(VIDEO_URL, {
             method: "POST",
             body: formData,
           });
