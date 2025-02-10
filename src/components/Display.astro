@@ -1,0 +1,36 @@
+<!-- 用于显示后端返回文字内容的区域 -->
+<div class="mt-4 p-2 dark:bg-gray-800 dark:text-white rounded-lg shadow-lg">
+  <textarea
+      id="textArea"
+      class="w-full h-55 p-4 text-black dark:bg-gray-700 dark:text-white rounded-md border-none resize-none"
+      readonly
+  >test</textarea>
+</div>
+
+<script>
+  // 从 localStorage 获取自定义的后端 URL，如果没有则使用默认值
+  const STREAM_URL = localStorage.getItem("backendURL") || "https://backend.com";
+  // 拼接出获取文字信息的完整接口 URL
+  const TEXT_URL = `${STREAM_URL}/api/text`;
+
+  // 获取 textarea DOM 对象
+  const textArea = document.getElementById("textArea");
+
+  // 定义一个函数，用于从后端获取文字内容并更新 textarea
+  async function fetchText() {
+    try {
+      const response = await fetch(TEXT_URL);
+      if (response.ok) {
+        const data = await response.text();
+        textArea.value = data;
+      } else {
+        console.error("Error fetching text:", response.status);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  }
+
+  // 每隔 2 秒拉取一次后端文字内容（你可以根据需要调整间隔时间）
+  setInterval(fetchText, 2000);
+</script>
