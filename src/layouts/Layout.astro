@@ -2,6 +2,8 @@
 import logo from "../assets/logo.png";
 import user from "../assets/user.jpg";
 import "../styles/global.css";
+
+import { ClientRouter } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -10,6 +12,7 @@ import "../styles/global.css";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>手语翻译</title>
+    <ClientRouter />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
