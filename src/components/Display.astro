@@ -6,39 +6,3 @@
     readonly>test</textarea
   >
 </div>
-
-<script>
-  // 从 localStorage 获取自定义的后端 URL，如果没有则使用默认值
-  const STREAM_URL =
-    localStorage.getItem("backendURL") || "https://backend.com";
-  // 拼接出获取文字信息的完整接口 URL
-  const TEXT_URL = `${STREAM_URL}/api/text`;
-
-  // 获取 textarea DOM 对象
-  const textArea = document.getElementById("textArea");
-
-  // 定义一个函数，用于从后端获取文字内容并更新 textarea
-  async function fetchText() {
-    try {
-      const response = await fetch(TEXT_URL);
-      if (response.ok) {
-        const data = await response.text();
-        // 如果后端返回的内容与当前 textarea 中的内容不同
-        if (textArea.value !== data) {
-          textArea.value = data;
-
-          // 将新消息发送到历史记录页面
-          const event = new CustomEvent("newChatMessage", { detail: data });
-          window.dispatchEvent(event);
-        }
-      } else {
-        console.error("Error fetching text:", response.status);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  }
-
-  // 每隔 2 秒拉取一次后端文字内容（你可以根据需要调整间隔时间）
-  setInterval(fetchText, 2000);
-</script>
