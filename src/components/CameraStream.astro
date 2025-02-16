@@ -120,9 +120,10 @@
     // 控制按钮图标：显示播放图标，隐藏暂停图标
     playIcon.style.display = "block";
     pauseIcon.style.display = "none";
-
+    
+    // 重置
     isStreaming = false;
-
+    hasFetchedText = false;
     // 开始获取后端文字内容
     fetchText();
   };
@@ -131,25 +132,41 @@
   async function fetchText() {
     if (hasFetchedText) return; // 如果已经获取过一次文字，停止执行
 
-    try {
-      const response = await fetch(TEXT_URL);
-      if (response.ok) {
-        const data = await response.text();
-        // 更新文本内容
-        console.log("Fetched text:", data);
-        textArea.value = data;
-        // 标记已获取一次内容
-        hasFetchedText = true;
+    let timeoutReached = false;
+    const timeout = setTimeout(() => {
+      timeoutReached = true;
+      textArea.value = "Error: Unable to fetch text within 20 seconds."; // 更新为错误信息
+    }, 20000); // 20秒超时
 
-        // 将新消息发送到历史记录页面
-        const event = new CustomEvent("newChatMessage", { detail: data });
-        window.dispatchEvent(event);
-      } else {
-        console.error("Error fetching text:", response.status);
+    // 每隔4秒拉取一次文字
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(TEXT_URL);
+        if (response.ok) {
+          const data = await response.text();
+          // 更新文本内容
+          console.log("Fetched text:", data);
+          textArea.value = data;
+
+          // 标记已获取一次内容
+          hasFetchedText = true;
+
+          // 停止拉取
+          clearTimeout(timeout);
+          clearInterval(interval);
+
+          // 将新消息发送到历史记录页面
+          const event = new CustomEvent("newChatMessage", { detail: data });
+          window.dispatchEvent(event);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
       }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
+
+      if (timeoutReached) {
+        clearInterval(interval); // 取消定时器
+      }
+    }, 4000); // 每4秒拉取一次
   }
 
   // 绑定按钮点击事件
