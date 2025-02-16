@@ -23,10 +23,14 @@
       const response = await fetch(TEXT_URL);
       if (response.ok) {
         const data = await response.text();
-        textArea.value = data;
-        // 将新消息发送到历史记录页面
-        const event = new CustomEvent("newChatMessage", { detail: data });
-        window.dispatchEvent(event);
+        // 如果后端返回的内容与当前 textarea 中的内容不同
+        if (textArea.value !== data) {
+          textArea.value = data;
+
+          // 将新消息发送到历史记录页面
+          const event = new CustomEvent("newChatMessage", { detail: data });
+          window.dispatchEvent(event);
+        }
       } else {
         console.error("Error fetching text:", response.status);
       }
