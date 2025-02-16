@@ -1,0 +1,70 @@
+<div class="mt-6 p-4 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-lg shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">Chat History</h2>
+    <ul id="chatHistory" class="space-y-4">
+      <!-- 历史记录会被动态填充在这里 -->
+    </ul>
+  </div>
+  
+  <script>
+    // 打开或创建 IndexedDB 数据库
+    const request = indexedDB.open("chat-web-store", 1);
+    let db;
+  
+    request.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("chats")) {
+        const store = db.createObjectStore("chats", { keyPath: "timestamp" });
+        store.createIndex("timestamp", "timestamp", { unique: true });
+      }
+    };
+  
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      fetchChatHistory(); // 成功后加载历史记录
+    };
+  
+    request.onerror = (e) => {
+      console.error("IndexedDB Error: ", e);
+    };
+  
+    // 获取并显示历史记录
+    function fetchChatHistory() {
+      const transaction = db.transaction("chats", "readonly");
+      const store = transaction.objectStore("chats");
+      const cursorRequest = store.openCursor();
+      
+      cursorRequest.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          const chat = cursor.value;
+          const listItem = document.createElement("li");
+          listItem.classList.add("p-2", "bg-gray-200", "dark:bg-gray-600", "rounded-lg");
+          listItem.innerHTML = `<strong>${new Date(chat.timestamp).toLocaleString()}:</strong> ${chat.text}`;
+          document.getElementById("chatHistory").appendChild(listItem);
+          cursor.continue();
+        }
+      };
+    }
+  
+    // 用于添加聊天记录到 IndexedDB
+    function addChatRecord(text) {
+      const timestamp = new Date().toISOString();
+      const chat = { timestamp, text };
+      
+      const transaction = db.transaction("chats", "readwrite");
+      const store = transaction.objectStore("chats");
+      store.put(chat);
+      
+      transaction.oncomplete = () => {
+        console.log("Chat added!");
+        fetchChatHistory(); // 更新历史记录
+      };
+    }
+  
+    // 监听从 Display 组件传来的新文字
+    window.addEventListener("newChatMessage", (e) => {
+      const text = e.detail;
+      addChatRecord(text);
+    });
+  </script>
+  

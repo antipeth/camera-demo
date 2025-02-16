@@ -1,15 +1,16 @@
 <!-- 用于显示后端返回文字内容的区域 -->
 <div class="mt-4 p-2 dark:bg-gray-800 dark:text-white rounded-lg shadow-lg">
   <textarea
-      id="textArea"
-      class="w-full h-55 p-4 text-black dark:bg-gray-700 dark:text-white rounded-md border-none resize-none"
-      readonly
-  >test</textarea>
+    id="textArea"
+    class="w-full h-55 p-4 text-black dark:bg-gray-700 dark:text-white rounded-md border-none resize-none"
+    readonly>test</textarea
+  >
 </div>
 
 <script>
   // 从 localStorage 获取自定义的后端 URL，如果没有则使用默认值
-  const STREAM_URL = localStorage.getItem("backendURL") || "https://backend.com";
+  const STREAM_URL =
+    localStorage.getItem("backendURL") || "https://backend.com";
   // 拼接出获取文字信息的完整接口 URL
   const TEXT_URL = `${STREAM_URL}/api/text`;
 
@@ -23,6 +24,9 @@
       if (response.ok) {
         const data = await response.text();
         textArea.value = data;
+        // 将新消息发送到历史记录页面
+        const event = new CustomEvent("newChatMessage", { detail: data });
+        window.dispatchEvent(event);
       } else {
         console.error("Error fetching text:", response.status);
       }
