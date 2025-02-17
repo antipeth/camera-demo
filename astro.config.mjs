@@ -22,5 +22,7 @@ export default defineConfig({
 
   output: 'server',
   integrations: [react()],
-  adapter: cloudflare()
+  adapter: cloudflare({
+    imageService: 'cloudflare'
+ }),
 });
