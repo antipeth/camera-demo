@@ -181,7 +181,6 @@ const session = await auth.api.getSession({
   document.querySelector("#signup").onclick = () => {
     const password = document.querySelector("#password").value;
     const confirmPassword = document.querySelector("#confirm-password").value;
-
     // 密码和确认密码一致性检查
     if (password !== confirmPassword) {
       // 显示错误提示
