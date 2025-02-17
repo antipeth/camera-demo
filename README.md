@@ -3,7 +3,7 @@
 ```bash
 git clone https://github.com/antipeth/camera-demo.git
 cd camera-demo
-pnpm install
+npm install
 ```
 ## setup
 ```bash
