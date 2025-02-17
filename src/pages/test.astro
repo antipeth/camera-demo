@@ -4,6 +4,8 @@ import { auth } from "../lib/auth"; // 导入你的 Better Auth 实例
 const session = await auth.api.getSession({
   headers: Astro.request.headers,
 });
+import user from "../assets/user.jpg";
+
 ---
 
 <button id="signup">signup</button>
@@ -12,9 +14,9 @@ const session = await auth.api.getSession({
 <button id="github">github</button>
 <p>{session?.user?.name || "Not logged in"}</p>
 <p>{session?.user?.email || "Not logged in"}</p>
+<img src={session?.user?.image ||user.src} class="h-8 me-3" alt="Logo" />
 <script>
   const { signUp, signIn, signOut } = await import("../lib/auth-client");
-  document.querySelector("#signup").onclick = () =>
     signUp.email({
       email: "test@example.com",
       password: "password1234",

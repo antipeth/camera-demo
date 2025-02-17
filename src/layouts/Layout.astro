@@ -126,7 +126,7 @@ const session = await auth.api.getSession({
                   <span class="sr-only">打开用户菜单</span>
                   <img
                     class="w-8 h-8 rounded-full"
-                    src={user.src}
+                    src={session?.user?.image ||user.src}
                     alt="user photo"
                   />
                 </button>
