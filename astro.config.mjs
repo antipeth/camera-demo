@@ -1,21 +1,25 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 
-import solidJs from '@astrojs/solid-js';
+import node from "@astrojs/node";
 
-import node from '@astrojs/node';
+import vue from "@astrojs/vue";
+
+import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
-  output: 'server',
-  integrations: [solidJs()],
-  adapter: node({
-    mode: 'standalone',
+  output: "server",
+
+  adapter: cloudflare({
+    imageService: "cloudflare",
   }),
+
+  integrations: [vue()],
 });
