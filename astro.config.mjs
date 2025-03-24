@@ -7,8 +7,6 @@ import node from "@astrojs/node";
 
 import vue from "@astrojs/vue";
 
-import cloudflare from "@astrojs/cloudflare";
-
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -17,8 +15,8 @@ export default defineConfig({
 
   output: "server",
 
-  adapter: cloudflare({
-    imageService: "cloudflare",
+  adapter: node({
+    mode: "standalone",
   }),
 
   integrations: [vue()],
