@@ -1,8 +1,8 @@
 ---
-import History from "../components/History.astro";
+import History from "../components/History.vue";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <History />
+    <History client:load="vue" />
 </Layout>
