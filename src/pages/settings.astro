@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import InputUrl from "../components/InputUrl.astro";
+import InputUrl from "../components/InputUrl.vue";
 ---
 
 <Layout>
-  <InputUrl />
+    <InputUrl client:load="vue" />
 </Layout>
