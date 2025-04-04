@@ -63,7 +63,7 @@ let stream = null;
 let mediaRecorder = null;
 let hasFetchedText = false;
 
-// 定义全局变量，初始值为默认值
+// URL 配置
 let STREAM_URL = "https://backend.com";
 let VIDEO_URL = `${STREAM_URL}/api/video`;
 let TEXT_URL = `${STREAM_URL}/api/text`;
@@ -76,7 +76,58 @@ onMounted(() => {
         VIDEO_URL = `${STREAM_URL}/api/video`;
         TEXT_URL = `${STREAM_URL}/api/text`;
     }
+    // 初始化 IndexedDB
+    openDB();
 });
+
+/* ========== IndexedDB 逻辑 ========== */
+let db = null;
+let pendingMessages = [];
+
+function openDB() {
+    const request = window.indexedDB.open("chat-web-store", 1);
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        if (!db.objectStoreNames.contains("chats")) {
+            const store = db.createObjectStore("chats", {
+                keyPath: "timestamp",
+            });
+            store.createIndex("timestamp", "timestamp", { unique: true });
+        }
+    };
+    request.onsuccess = (e) => {
+        db = e.target.result;
+        // 如果有缓存的消息，则写入数据库
+        if (pendingMessages.length) {
+            pendingMessages.forEach((msg) => addChatRecord(msg));
+            pendingMessages = [];
+        }
+    };
+    request.onerror = (e) => {
+        console.error("IndexedDB Error: ", e);
+    };
+}
+
+function addChatRecord(text) {
+    if (!db) {
+        pendingMessages.push(text);
+        return;
+    }
+    const timestamp = new Date().toISOString();
+    const chat = { timestamp, text };
+    const transaction = db.transaction("chats", "readwrite");
+    const store = transaction.objectStore("chats");
+    const request = store.put(chat);
+    request.onsuccess = () => {
+        console.log("Chat added!");
+        // 通知 History.vue 刷新
+        window.dispatchEvent(new CustomEvent("chatRecordAdded"));
+    };
+    request.onerror = (e) => {
+        console.error("Error adding chat record:", e);
+    };
+}
+/* ========== IndexedDB 逻辑 END ========== */
 
 // 启动摄像头并开始推流，同时显示视频预览
 const startStreaming = async () => {
@@ -105,7 +156,7 @@ const startStreaming = async () => {
     }
 };
 
-// 停止摄像头，结束推流，并开始拉取后端文字内容
+// 停止摄像头、结束推流，并开始拉取后端文字内容
 const stopStreaming = () => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
@@ -122,13 +173,13 @@ const stopStreaming = () => {
     fetchText();
 };
 
-// 获取后端文字内容
+// 获取后端文字内容，并写入 IndexedDB
 const fetchText = async () => {
     if (hasFetchedText) return;
     let timeoutReached = false;
     const timeout = setTimeout(() => {
         timeoutReached = true;
-        // 20秒超时后，发送错误信息给 Display 组件
+        // 超时后通知 Display 组件
         window.dispatchEvent(
             new CustomEvent("newChatMessage", {
                 detail: "Error: Unable to fetch text within 20 seconds.",
@@ -142,10 +193,12 @@ const fetchText = async () => {
             if (response.ok) {
                 const data = await response.text();
                 console.log("Fetched text:", data);
-                // 通过全局事件将新消息发送到 Display 组件
+                // 先派发事件给 Display 组件（用于展示）
                 window.dispatchEvent(
                     new CustomEvent("newChatMessage", { detail: data }),
                 );
+                // 同时写入 IndexedDB
+                addChatRecord(data);
                 hasFetchedText = true;
                 clearTimeout(timeout);
                 clearInterval(interval);
