@@ -1,11 +1,11 @@
 ---
-import CameraStream from "../components/CameraStream.astro";
-import Display from "../components/Display.astro";
+import CameraStream from "../components/CameraStream.vue";
+import Display from "../components/Display.vue";
 
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-      <CameraStream />
-      <Display />
+    <CameraStream client:load="vue" />
+    <Display client:load="vue" />
 </Layout>
